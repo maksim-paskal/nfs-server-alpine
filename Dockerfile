@@ -1,7 +1,7 @@
 FROM alpine:latest
-LABEL maintainer "Steven Iveson <steve@iveson.eu>"
-LABEL source "https://github.com/sjiveson/nfs-server-alpine"
-LABEL branch "master"
+LABEL maintainer="Steven Iveson <steve@iveson.eu>"
+LABEL source="https://github.com/sjiveson/nfs-server-alpine"
+LABEL branch="master"
 COPY Dockerfile README.md /
 
 RUN apk add --no-cache --update --verbose nfs-utils bash iproute2 && \
@@ -15,5 +15,10 @@ COPY nfsd.sh /usr/bin/nfsd.sh
 COPY .bashrc /root/.bashrc
 
 RUN chmod +x /usr/bin/nfsd.sh
+
+# increase the number of threads for rpc.nfsd
+# 8 is the default, but we need more for parallelism
+# 16 is a good number for a 4-core machine
+ENV RPCNFSDCOUNT=16
 
 ENTRYPOINT ["/usr/bin/nfsd.sh"]
